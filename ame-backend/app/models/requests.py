@@ -69,6 +69,10 @@ class ProjectProgressRequest(BaseModel):
     """项目进度请求"""
     project_name: str = Field(..., description="项目名称")
 
+class ProjectAnalysisRequest(BaseModel):
+    """项目分析请求"""
+    project_desc: str = Field(..., description="项目描述")
+
 
 # ==================== Life Scene Requests ====================
 

@@ -46,11 +46,17 @@ class Settings(BaseSettings):
     # MEM 配置
     MEM_TOP_K: int = 10
     MEM_SIMILARITY_THRESHOLD: float = 0.7
-    
+
     # 文件上传配置
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10MB
     ALLOWED_EXTENSIONS: List[str] = [".txt", ".pdf", ".doc", ".docx", ".md"]
-    
+
+    # 项目分析配置
+    PROJECT_ANALYSIS_PATH: Path = Field(
+        default_factory=lambda: Path(__file__).parent.parent.parent / "data" / "project")
+    PROJECT_ANALYSIS_FILE_NAME: str = "project_analysis.txt"
+    HISTORY_ANALYSIS_FILE_NAME: str = "history_project_analysis.txt"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

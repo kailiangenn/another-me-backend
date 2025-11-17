@@ -186,3 +186,28 @@ class RecordLifeEventResponse(BaseModel):
     event_type: str = Field(..., description="事件类型")
     timestamp: str = Field(..., description="记录时间")
     message: str = Field(default="Life event recorded successfully")
+
+class ApiResponse(BaseModel):
+    code: int = Field(..., description="状态码")
+    msg: str = Field(..., description="状态消息")
+    data: Any = Field(..., description="响应数据，可以是任意类型（字符串、对象等）")
+
+    @classmethod
+    def success(cls, data: Any = None) -> "ApiResponse":
+        """
+        构造一个成功的 API 响应。
+
+        :param data: 任意类型的响应数据（默认为 None）
+        :return: ApiResponse 实例，code=200, msg="success"
+        """
+        return cls(code=200, msg="success", data=data)
+
+    @classmethod
+    def error(cls, code: int, msg: str) -> "ApiResponse":
+        """
+        构造一个失败的 API 响应。
+        :param code: 错误码
+        :param msg: 错误消息
+        :return: ApiResponse 实例，code=指定错误码, msg=指定错误消息
+        """
+        return cls(code=code, msg=msg, data=None)
