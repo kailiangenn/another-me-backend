@@ -1,0 +1,24 @@
+# Another Me Backend - 依赖包
+# v0.1.0 - 集成双存储架构和任务调度
+
+# FastAPI 框架
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Pydantic 配置管理
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# CORS
+starlette==0.35.1
+
+# 日志
+coloredlogs>=15.0
+
+# 任务调度 (v0.1.0)
+apscheduler>=3.10.4
+
+# AME 引擎依赖
+# 确保与 AME 引擎的依赖保持一致
+-e ../ame
