@@ -5,17 +5,17 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.services.config_service import ConfigService, get_config_service
 from app.models.requests import ConfigRequest, ConfigTestRequest
-from app.models.responses import BaseResponse, ConfigTestResult
+from app.models.responses import ApiResponse
 from app.core.logger import get_logger
 
 router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.post("/save", response_model=BaseResponse)
+@router.post("/save", response_model=ApiResponse)
 async def save_config(
-    request: ConfigRequest,
-    service: ConfigService = Depends(get_config_service)
+        request: ConfigRequest,
+        service: ConfigService = Depends(get_config_service)
 ):
     """
     保存配置
@@ -30,9 +30,9 @@ async def save_config(
     try:
         config_dict = request.model_dump()
         result = await service.save_config(config_dict)
-        
-        return BaseResponse(**result)
-        
+
+        return ApiResponse.success(data=result)
+
     except Exception as e:
         logger.error(f"Save config failed: {e}")
         raise HTTPException(
@@ -41,9 +41,9 @@ async def save_config(
         )
 
 
-@router.get("/load")
+@router.get("/load", response_model=ApiResponse)
 async def load_config(
-    service: ConfigService = Depends(get_config_service)
+        service: ConfigService = Depends(get_config_service)
 ):
     """
     加载配置
@@ -56,13 +56,13 @@ async def load_config(
     """
     try:
         config = await service.load_config()
-        
+
         # 隐藏敏感信息
         if 'api_key' in config and config['api_key']:
             config['api_key'] = config['api_key'][:8] + '...'
-        
-        return config
-        
+
+        return ApiResponse.success(data=config)
+
     except Exception as e:
         logger.error(f"Load config failed: {e}")
         raise HTTPException(
@@ -71,10 +71,10 @@ async def load_config(
         )
 
 
-@router.post("/test", response_model=ConfigTestResult)
+@router.post("/test", response_model=ApiResponse)
 async def test_config(
-    request: ConfigTestRequest,
-    service: ConfigService = Depends(get_config_service)
+        request: ConfigTestRequest,
+        service: ConfigService = Depends(get_config_service)
 ):
     """
     测试配置
@@ -89,13 +89,8 @@ async def test_config(
     try:
         config_dict = request.model_dump()
         result = await service.test_config(config_dict)
-        
-        return ConfigTestResult(**result)
-        
+        return ApiResponse.success(data=result)
+
     except Exception as e:
         logger.error(f"Test config failed: {e}")
-        return ConfigTestResult(
-            success=False,
-            message=f"Test failed: {str(e)}",
-            model_available=False
-        )
+        return ApiResponse.error(code=500, msg=f"Test failed: {str(e)}")

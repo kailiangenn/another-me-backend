@@ -4,6 +4,7 @@
 """
 from fastapi import APIRouter, HTTPException, Depends, FastAPI, Body
 
+from app.api.v1 import config
 from app.core.logger import get_logger
 from app.models.requests import ProjectAnalysisRequest
 from app.services.project_service import get_project_service, ProjectService
@@ -155,12 +156,12 @@ async def get_history_project_analysis(
     logger.info(f"API: get_history_project_analysis...")
 
     try:
-        result = service.get_history_project_analysis()
-        return ApiResponse.success(result)
+        result = await service.get_history_project_analysis()
+        return ApiResponse.success(data=result)
 
     except Exception as e:
         logger.error(f"获取历史项目分析记录失败: {e}")
-        return ApiResponse.error(code=500, msg=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/project/analysis", response_model=ApiResponse)
@@ -174,17 +175,18 @@ async def analysis_project_desc(
     logger.info(f"API: project_analysis...")
 
     try:
-        result = service.analysis_project_desc(request.project_desc)
-        return ApiResponse.success(result)
+        result = await service.analysis_project_desc(request.project_desc)
+        return ApiResponse.success(data=result)
 
     except Exception as e:
         logger.error(f"根据文本进行项目分析失败: {e}")
-        return ApiResponse.error(code=500, msg=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
     app = FastAPI(title="Another Me Backend")
     app.include_router(router, prefix="/api/v1/work")
+    app.include_router(config.router, prefix="/api/v1/config")
     import uvicorn
 
     uvicorn.run(

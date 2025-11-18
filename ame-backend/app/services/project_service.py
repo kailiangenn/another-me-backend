@@ -21,10 +21,10 @@ class ProjectService:
         #         message="Work service not configured",
         #         detail="Please configure OpenAI API Key first"
         #     )
-        self.history_analysis_path = settings.PROJECT_ANALYSIS_PATH / settings.HISTORY_ANALYSIS_FILE_NAME
-        self.project_analysis_path = settings.PROJECT_ANALYSIS_PATH / settings.PROJECT_ANALYSIS_FILE_NAME
+        self.history_analysis_path = settings.PROJECT_STORE_PATH / settings.HISTORY_ANALYSIS_FILE_NAME
+        self.project_analysis_path = settings.PROJECT_STORE_PATH / settings.PROJECT_ANALYSIS_FILE_NAME
 
-    def analysis_project_desc(self, project_desc):
+    async def analysis_project_desc(self, project_desc):
         """项目分析"""
         # todo chenchenaq 替换方法
         # 1. 调用ame方法获取分析结果
@@ -46,7 +46,7 @@ class ProjectService:
 
         return analysis_result
 
-    def get_history_project_analysis(self):
+    async def get_history_project_analysis(self):
         """获取历史项目分析结果"""
         # 读取历史分析文件:.txt
         try:

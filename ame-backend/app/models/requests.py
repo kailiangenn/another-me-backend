@@ -25,6 +25,7 @@ class SearchRequest(BaseModel):
 
 class ConfigRequest(BaseModel):
     """配置请求模型"""
+    # 此处配置信息与config.json文件中定义的变量一致
     api_key: str = Field(..., description="OpenAI API Key")
     base_url: Optional[str] = Field("https://api.openai.com/v1", description="API 基础 URL")
     model: Optional[str] = Field("gpt-3.5-turbo", description="模型名称")

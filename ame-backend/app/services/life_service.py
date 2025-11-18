@@ -39,9 +39,9 @@ class LifeService:
         try:
             # 初始化 LLM Caller
             self.llm_caller = LLMCaller(
-                api_key=settings.OPENAI_API_KEY,
-                base_url=settings.OPENAI_BASE_URL,
-                model=settings.OPENAI_MODEL
+                api_key=settings.API_KEY,
+                base_url=settings.BASE_URL,
+                model=settings.MODEL
             )
         except Exception as e:
             logger.error(f"Failed to initialize LLM caller: {e}")

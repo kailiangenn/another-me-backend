@@ -4,7 +4,8 @@
 """
 import os
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
+
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -31,12 +32,14 @@ class Settings(BaseSettings):
     DATA_DIR: Path = Field(default_factory=lambda: Path(__file__).parent.parent.parent.parent / "data")
     RAG_VECTOR_STORE_PATH: Optional[Path] = None
     MEM_VECTOR_STORE_PATH: Optional[Path] = None
+    PROJECT_STORE_PATH: Optional[Path] = None
     UPLOADS_DIR: Optional[Path] = None
     CONFIG_DIR: Optional[Path] = None
     
     # 向量数据库配置
     VECTOR_STORE_TYPE: str = "memu"
     EMBEDDING_MODEL: str = "text-embedding-ada-002"
+    EMBEDDING_DIMENSION: Optional[int] = None
     
     # RAG 配置
     RAG_TOP_K: int = 5
@@ -52,8 +55,6 @@ class Settings(BaseSettings):
     ALLOWED_EXTENSIONS: List[str] = [".txt", ".pdf", ".doc", ".docx", ".md"]
 
     # 项目分析配置
-    PROJECT_ANALYSIS_PATH: Path = Field(
-        default_factory=lambda: Path(__file__).parent.parent.parent / "data" / "project")
     PROJECT_ANALYSIS_FILE_NAME: str = "project_analysis.txt"
     HISTORY_ANALYSIS_FILE_NAME: str = "history_project_analysis.txt"
 
@@ -80,6 +81,10 @@ class Settings(BaseSettings):
         if not self.MEM_VECTOR_STORE_PATH:
             self.MEM_VECTOR_STORE_PATH = self.DATA_DIR / "mem_vector_store"
             self.MEM_VECTOR_STORE_PATH.mkdir(parents=True, exist_ok=True)
+
+        if not self.PROJECT_STORE_PATH:
+            self.PROJECT_STORE_PATH = self.DATA_DIR / "project_store"
+            self.PROJECT_STORE_PATH.mkdir(parents=True, exist_ok=True)
         
         if not self.UPLOADS_DIR:
             self.UPLOADS_DIR = self.DATA_DIR / "uploads"
