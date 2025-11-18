@@ -3,11 +3,11 @@
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.models.base_enums import TaskPriority, TaskStatus
 from app.services.config_service import ConfigService, get_config_service
 from app.models.requests import ConfigRequest, ConfigTestRequest
 from app.models.responses import ApiResponse
 from app.core.logger import get_logger
-
 router = APIRouter()
 logger = get_logger(__name__)
 
@@ -89,6 +89,25 @@ async def test_config(
     try:
         config_dict = request.model_dump()
         result = await service.test_config(config_dict)
+        return ApiResponse.success(data=result)
+
+    except Exception as e:
+        logger.error(f"Test config failed: {e}")
+        return ApiResponse.error(code=500, msg=f"Test failed: {str(e)}")
+
+
+@router.get("/dict", response_model=ApiResponse)
+async def get_dict(
+        type: str
+):
+
+    try:
+        if type == 'task_priority':
+            result = TaskPriority.choices()
+        elif type == 'task_status':
+            result = TaskStatus.choices()
+        else:
+            result = []
         return ApiResponse.success(data=result)
 
     except Exception as e:

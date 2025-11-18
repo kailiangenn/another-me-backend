@@ -37,9 +37,9 @@ class MEMService:
         try:
             # 初始化 LLM Caller
             llm_caller = LLMCaller(
-                api_key=settings.API_KEY,
-                base_url=settings.BASE_URL,
-                model=settings.MODEL
+                api_key=settings.OPENAI_API_KEY,
+                base_url=settings.OPENAI_BASE_URL,
+                model=settings.OPENAI_MODEL
             )
         except Exception as e:
             logger.error(f"Failed to initialize LLM caller: {e}")
@@ -86,6 +86,7 @@ class MEMService:
         Yields:
             文本片段
         """
+        # todo chenchenaq 调用ame对话方法
         self._check_engine()
         
         logger.info(f"Chat request: {message[:50]}...")
@@ -102,124 +103,124 @@ class MEMService:
             logger.error(f"Chat error: {e}")
             raise
     
-    async def chat(
-        self,
-        message: str,
-        temperature: float = 0.8
-    ) -> str:
-        """
-        非流式对话
-        
-        Args:
-            message: 用户消息
-            temperature: 温度参数
-            
-        Returns:
-            AI 回复
-        """
-        self._check_engine()
-        
-        logger.info(f"Chat request: {message[:50]}...")
-        
-        try:
-            response = await self.engine.generate_response(
-                prompt=message,
-                temperature=temperature,
-                use_history=True
-            )
-            
-            logger.info("Chat response generated")
-            return response
-            
-        except Exception as e:
-            logger.error(f"Chat error: {e}")
-            raise
-    
-    async def learn_from_conversation(
-        self,
-        message: str,
-        context: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """
-        从对话中学习
-        
-        Args:
-            message: 用户消息
-            context: 对话上下文
-            
-        Returns:
-            学习结果
-        """
-        self._check_engine()
-        
-        logger.info("Learning from conversation")
-        
-        try:
-            await self.engine.learn_from_conversation(
-                user_message=message,
-                context=context
-            )
-            
-            logger.info("Learning completed")
-            
-            return {
-                "success": True,
-                "message": "Conversation learned successfully"
-            }
-            
-        except Exception as e:
-            logger.error(f"Learning error: {e}")
-            raise
-    
-    async def get_memories(
-        self,
-        limit: int = 100
-    ) -> List[Memory]:
-        """
-        获取记忆列表
-        
-        Args:
-            limit: 返回数量限制
-            
-        Returns:
-            记忆列表
-        """
-        self._check_engine()
-        
-        logger.debug("Getting memories")
-        
-        try:
-            # TODO: 实现获取记忆功能
-            # 目前返回空列表
-            logger.warning("Get memories not yet fully implemented")
-            return []
-            
-        except Exception as e:
-            logger.error(f"Failed to get memories: {e}")
-            raise
-    
-    async def delete_memory(self, memory_id: str) -> bool:
-        """
-        删除记忆
-        
-        Args:
-            memory_id: 记忆 ID
-            
-        Returns:
-            是否成功
-        """
-        self._check_engine()
-        
-        logger.info(f"Deleting memory: {memory_id}")
-        
-        try:
-            # TODO: 实现删除记忆功能
-            logger.warning("Delete memory not yet implemented")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to delete memory {memory_id}: {e}")
-            raise
+    # async def chat(
+    #     self,
+    #     message: str,
+    #     temperature: float = 0.8
+    # ) -> str:
+    #     """
+    #     非流式对话
+    #
+    #     Args:
+    #         message: 用户消息
+    #         temperature: 温度参数
+    #
+    #     Returns:
+    #         AI 回复
+    #     """
+    #     self._check_engine()
+    #
+    #     logger.info(f"Chat request: {message[:50]}...")
+    #
+    #     try:
+    #         response = await self.engine.generate_response(
+    #             prompt=message,
+    #             temperature=temperature,
+    #             use_history=True
+    #         )
+    #
+    #         logger.info("Chat response generated")
+    #         return response
+    #
+    #     except Exception as e:
+    #         logger.error(f"Chat error: {e}")
+    #         raise
+    #
+    # async def learn_from_conversation(
+    #     self,
+    #     message: str,
+    #     context: Optional[str] = None
+    # ) -> Dict[str, Any]:
+    #     """
+    #     从对话中学习
+    #
+    #     Args:
+    #         message: 用户消息
+    #         context: 对话上下文
+    #
+    #     Returns:
+    #         学习结果
+    #     """
+    #     self._check_engine()
+    #
+    #     logger.info("Learning from conversation")
+    #
+    #     try:
+    #         await self.engine.learn_from_conversation(
+    #             user_message=message,
+    #             context=context
+    #         )
+    #
+    #         logger.info("Learning completed")
+    #
+    #         return {
+    #             "success": True,
+    #             "message": "Conversation learned successfully"
+    #         }
+    #
+    #     except Exception as e:
+    #         logger.error(f"Learning error: {e}")
+    #         raise
+    #
+    # async def get_memories(
+    #     self,
+    #     limit: int = 100
+    # ) -> List[Memory]:
+    #     """
+    #     获取记忆列表
+    #
+    #     Args:
+    #         limit: 返回数量限制
+    #
+    #     Returns:
+    #         记忆列表
+    #     """
+    #     self._check_engine()
+    #
+    #     logger.debug("Getting memories")
+    #
+    #     try:
+    #         # TODO: 实现获取记忆功能
+    #         # 目前返回空列表
+    #         logger.warning("Get memories not yet fully implemented")
+    #         return []
+    #
+    #     except Exception as e:
+    #         logger.error(f"Failed to get memories: {e}")
+    #         raise
+    #
+    # async def delete_memory(self, memory_id: str) -> bool:
+    #     """
+    #     删除记忆
+    #
+    #     Args:
+    #         memory_id: 记忆 ID
+    #
+    #     Returns:
+    #         是否成功
+    #     """
+    #     self._check_engine()
+    #
+    #     logger.info(f"Deleting memory: {memory_id}")
+    #
+    #     try:
+    #         # TODO: 实现删除记忆功能
+    #         logger.warning("Delete memory not yet implemented")
+    #         return True
+    #
+    #     except Exception as e:
+    #         logger.error(f"Failed to delete memory {memory_id}: {e}")
+    #         raise
 
 
 # 全局服务实例

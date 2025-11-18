@@ -14,12 +14,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from app.api.v1 import health, rag, mem, config, work, life
+from app.api.v1 import health, config, work
 from app.middleware.logging import LoggingMiddleware
 from app.middleware.error_handler import ErrorHandlerMiddleware
 from app.core.config import get_settings
 from app.core.logger import setup_logging, get_logger
-
 
 # 初始化日志
 setup_logging()
@@ -35,9 +34,9 @@ async def lifespan(app: FastAPI):
     logger.info(f"Version: {settings.APP_VERSION}")
     logger.info(f"Debug Mode: {settings.DEBUG}")
     logger.info(f"Data Directory: {settings.DATA_DIR}")
-    
+
     yield
-    
+
     # 关闭时
     logger.info("Shutting down Another Me API...")
 
@@ -50,7 +49,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-
 # 配置 CORS
 settings = get_settings()
 app.add_middleware(
@@ -61,15 +59,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # 添加自定义中间件
 app.add_middleware(LoggingMiddleware)
 app.add_middleware(ErrorHandlerMiddleware)
 
-
 # 存储设置到应用状态
 app.state.settings = settings
-
 
 # 注册路由
 app.include_router(
@@ -78,17 +73,17 @@ app.include_router(
     tags=["health"]
 )
 
-app.include_router(
-    rag.router,
-    prefix="/api/v1/rag",
-    tags=["rag"]
-)
-
-app.include_router(
-    mem.router,
-    prefix="/api/v1/mem",
-    tags=["mem"]
-)
+# app.include_router(
+#     rag.router,
+#     prefix="/api/v1/rag",
+#     tags=["rag"]
+# )
+#
+# app.include_router(
+#     mem.router,
+#     prefix="/api/v1/mem",
+#     tags=["mem"]
+# )
 
 app.include_router(
     config.router,
@@ -103,11 +98,12 @@ app.include_router(
     tags=["work"]
 )
 
-app.include_router(
-    life.router,
-    prefix="/api/v1/life",
-    tags=["life"]
-)
+
+# app.include_router(
+#     life.router,
+#     prefix="/api/v1/life",
+#     tags=["life"]
+# )
 
 
 # 根路径
@@ -124,7 +120,7 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run(
         "main:app",
         host="0.0.0.0",

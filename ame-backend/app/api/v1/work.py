@@ -6,9 +6,10 @@ from fastapi import APIRouter, HTTPException, Depends, FastAPI, Body
 
 from app.api.v1 import config
 from app.core.logger import get_logger
-from app.models.requests import ProjectAnalysisRequest
+from app.models.requests import ProjectAnalysisRequest, TaskUpdateRequest, TaskAnalysisRequest
 from app.services.project_service import get_project_service, ProjectService
-from app.models.responses import ApiResponse
+from app.models.responses import ApiResponse, ApiResponseWithPageable, Pageable
+from app.services.task_service import get_task_service, TaskService
 
 logger = get_logger(__name__)
 
@@ -180,6 +181,67 @@ async def analysis_project_desc(
 
     except Exception as e:
         logger.error(f"根据文本进行项目分析失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/task/list", response_model=ApiResponseWithPageable)
+async def task_list(
+        page: int = 1, size: int = 9999,
+        service: TaskService = Depends(get_task_service)
+):
+    """
+    获取任务列表
+    """
+    logger.info(f"API: task_list...")
+
+    try:
+        result = await service.get_task_list(page, size)
+        pageable = Pageable(total_count=result["total"], page=page, size=size)
+        return ApiResponseWithPageable.success(data=result["items"], pageable=pageable)
+
+    except Exception as e:
+        logger.error(f"获取任务列表失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/task/update", response_model=ApiResponse)
+async def update_task(
+        request: TaskUpdateRequest,
+        service: TaskService = Depends(get_task_service)
+):
+    """
+    更新任务
+    """
+    logger.info(f"API: update_task...")
+
+    try:
+        result = await service.update_task_by_id(id=request.task_id,
+                                                 name=request.task_name,
+                                                 priority=request.priority,
+                                                 status=request.status)
+        return ApiResponse.success(data=result)
+
+    except Exception as e:
+        logger.error(f"更新任务: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/task/analysis", response_model=ApiResponse)
+async def analysis_task(
+        request: TaskAnalysisRequest,
+        service: TaskService = Depends(get_task_service)
+):
+    """
+    任务分析
+    """
+    logger.info(f"API: update_task...")
+
+    try:
+        result = await service.analysis_task_desc(request.task_desc)
+        return ApiResponse.success(data=result)
+
+    except Exception as e:
+        logger.error(f"任务分析: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

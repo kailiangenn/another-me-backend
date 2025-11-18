@@ -74,6 +74,18 @@ class ProjectAnalysisRequest(BaseModel):
     """项目分析请求"""
     project_desc: str = Field(..., description="项目描述")
 
+class  TaskUpdateRequest(BaseModel):
+    """任务更新请求"""
+    task_id: int = Field(..., description="任务ID")
+    task_name: str = Field(..., description="任务名称")
+    priority: int = Field(..., description="任务优先级")
+    status: int = Field(..., description="任务状态")
+
+class  TaskAnalysisRequest(BaseModel):
+    """任务分析请求"""
+    task_desc: str = Field(..., description="任务描述")
+
+
 
 # ==================== Life Scene Requests ====================
 

@@ -75,148 +75,148 @@ async def chat_stream(
         )
 
 
-@router.post("/chat-sync", response_model=ChatResponse)
-async def chat(
-    request: ChatRequest,
-    service: MEMService = Depends(get_mem_service)
-):
-    """
-    同步对话接口
-    
-    Args:
-        request: 聊天请求
-        service: MEM 服务实例
-        
-    Returns:
-        对话响应
-    """
-    try:
-        response = await service.chat(
-            message=request.message,
-            temperature=0.8
-        )
-        
-        return ChatResponse(
-            message=response,
-            timestamp=datetime.now()
-        )
-        
-    except RuntimeError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
-        )
-    except Exception as e:
-        logger.error(f"Chat failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Chat failed: {str(e)}"
-        )
-
-
-@router.post("/learn", response_model=BaseResponse)
-async def learn(
-    request: LearnRequest,
-    service: MEMService = Depends(get_mem_service)
-):
-    """
-    学习对话
-    
-    Args:
-        request: 学习请求
-        service: MEM 服务实例
-        
-    Returns:
-        学习结果
-    """
-    try:
-        result = await service.learn_from_conversation(
-            message=request.message,
-            context=request.context
-        )
-        
-        return BaseResponse(**result)
-        
-    except RuntimeError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
-        )
-    except Exception as e:
-        logger.error(f"Learn failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Learn failed: {str(e)}"
-        )
-
-
-@router.get("/memories", response_model=MemoryListResponse)
-async def get_memories(
-    limit: int = 100,
-    service: MEMService = Depends(get_mem_service)
-):
-    """
-    获取记忆列表
-    
-    Args:
-        limit: 数量限制
-        service: MEM 服务实例
-        
-    Returns:
-        记忆列表
-    """
-    try:
-        memories = await service.get_memories(limit=limit)
-        
-        return MemoryListResponse(
-            memories=memories,
-            total=len(memories)
-        )
-        
-    except RuntimeError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
-        )
-    except Exception as e:
-        logger.error(f"Get memories failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get memories: {str(e)}"
-        )
-
-
-@router.delete("/memories/{memory_id}", response_model=BaseResponse)
-async def delete_memory(
-    memory_id: str,
-    service: MEMService = Depends(get_mem_service)
-):
-    """
-    删除记忆
-    
-    Args:
-        memory_id: 记忆 ID
-        service: MEM 服务实例
-        
-    Returns:
-        删除结果
-    """
-    try:
-        success = await service.delete_memory(memory_id)
-        
-        return BaseResponse(
-            success=success,
-            message="Memory deleted successfully" if success else "Delete failed"
-        )
-        
-    except RuntimeError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
-        )
-    except Exception as e:
-        logger.error(f"Delete memory failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Delete failed: {str(e)}"
-        )
+# @router.post("/chat-sync", response_model=ChatResponse)
+# async def chat(
+#     request: ChatRequest,
+#     service: MEMService = Depends(get_mem_service)
+# ):
+#     """
+#     同步对话接口
+#
+#     Args:
+#         request: 聊天请求
+#         service: MEM 服务实例
+#
+#     Returns:
+#         对话响应
+#     """
+#     try:
+#         response = await service.chat(
+#             message=request.message,
+#             temperature=0.8
+#         )
+#
+#         return ChatResponse(
+#             message=response,
+#             timestamp=datetime.now()
+#         )
+#
+#     except RuntimeError as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+#             detail=str(e)
+#         )
+#     except Exception as e:
+#         logger.error(f"Chat failed: {e}")
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Chat failed: {str(e)}"
+#         )
+#
+#
+# @router.post("/learn", response_model=BaseResponse)
+# async def learn(
+#     request: LearnRequest,
+#     service: MEMService = Depends(get_mem_service)
+# ):
+#     """
+#     学习对话
+#
+#     Args:
+#         request: 学习请求
+#         service: MEM 服务实例
+#
+#     Returns:
+#         学习结果
+#     """
+#     try:
+#         result = await service.learn_from_conversation(
+#             message=request.message,
+#             context=request.context
+#         )
+#
+#         return BaseResponse(**result)
+#
+#     except RuntimeError as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+#             detail=str(e)
+#         )
+#     except Exception as e:
+#         logger.error(f"Learn failed: {e}")
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Learn failed: {str(e)}"
+#         )
+#
+#
+# @router.get("/memories", response_model=MemoryListResponse)
+# async def get_memories(
+#     limit: int = 100,
+#     service: MEMService = Depends(get_mem_service)
+# ):
+#     """
+#     获取记忆列表
+#
+#     Args:
+#         limit: 数量限制
+#         service: MEM 服务实例
+#
+#     Returns:
+#         记忆列表
+#     """
+#     try:
+#         memories = await service.get_memories(limit=limit)
+#
+#         return MemoryListResponse(
+#             memories=memories,
+#             total=len(memories)
+#         )
+#
+#     except RuntimeError as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+#             detail=str(e)
+#         )
+#     except Exception as e:
+#         logger.error(f"Get memories failed: {e}")
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Failed to get memories: {str(e)}"
+#         )
+#
+#
+# @router.delete("/memories/{memory_id}", response_model=BaseResponse)
+# async def delete_memory(
+#     memory_id: str,
+#     service: MEMService = Depends(get_mem_service)
+# ):
+#     """
+#     删除记忆
+#
+#     Args:
+#         memory_id: 记忆 ID
+#         service: MEM 服务实例
+#
+#     Returns:
+#         删除结果
+#     """
+#     try:
+#         success = await service.delete_memory(memory_id)
+#
+#         return BaseResponse(
+#             success=success,
+#             message="Memory deleted successfully" if success else "Delete failed"
+#         )
+#
+#     except RuntimeError as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+#             detail=str(e)
+#         )
+#     except Exception as e:
+#         logger.error(f"Delete memory failed: {e}")
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Delete failed: {str(e)}"
+#         )

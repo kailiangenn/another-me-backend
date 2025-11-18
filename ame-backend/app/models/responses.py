@@ -211,3 +211,28 @@ class ApiResponse(BaseModel):
         :return: ApiResponse 实例，code=指定错误码, msg=指定错误消息
         """
         return cls(code=code, msg=msg, data=None)
+
+class Pageable(BaseModel):
+    page: int = Field(..., description="当前页码")
+    size: int = Field(..., description="每页大小")
+    total_count: int = Field(..., description="总记录数")
+
+class ApiResponseWithPageable(ApiResponse):
+    pageable: Optional[Pageable] = Field(None, description="分页信息")
+
+    @classmethod
+    def success(
+        cls,
+        data: Any = None,
+        pageable: Optional[Pageable] = None
+    ) -> "ApiResponseWithPageable":
+        return cls(code=200, msg="success", data=data, pageable=pageable)
+
+    @classmethod
+    def error(
+        cls,
+        code: int,
+        msg: str,
+        pageable: Optional[Pageable] = None
+    ) -> "ApiResponseWithPageable":
+        return cls(code=code, msg=msg, data=None, pageable=pageable)
