@@ -9,6 +9,7 @@ from app.core.logger import get_logger
 from app.models.requests import ProjectAnalysisRequest, TaskUpdateRequest, TaskAnalysisRequest
 from app.services.project_service import get_project_service, ProjectService
 from app.models.responses import ApiResponse, ApiResponseWithPageable, Pageable
+from app.services.suggest_service import get_suggest_service, SuggestService
 from app.services.task_service import get_task_service, TaskService
 
 logger = get_logger(__name__)
@@ -242,6 +243,39 @@ async def analysis_task(
 
     except Exception as e:
         logger.error(f"任务分析: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/suggest", response_model=ApiResponse)
+async def suggest(
+        service: SuggestService = Depends(get_suggest_service)
+):
+    """
+    获取今日工作建议
+    """
+    logger.info(f"API: suggest...")
+
+    try:
+        result = await service.get_suggest_by_date()
+        return ApiResponse.success(data=result)
+    except Exception as e:
+        logger.error(f"获取今日工作建议失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/suggest/generate", response_model=ApiResponse)
+async def suggest_generate(
+        service: SuggestService = Depends(get_suggest_service)
+):
+    """
+    工作建议生成
+    """
+    logger.info(f"API: suggest_generate...")
+
+    try:
+        result = await service.generate_and_save_suggest()
+        return ApiResponse.success(data=result)
+    except Exception as e:
+        logger.error(f"工作建议生成失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

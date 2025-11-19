@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     RAG_VECTOR_STORE_PATH: Optional[Path] = None
     MEM_VECTOR_STORE_PATH: Optional[Path] = None
     PROJECT_STORE_PATH: Optional[Path] = None
+    SUGGEST_STORE_PATH: Optional[Path] = None
     UPLOADS_DIR: Optional[Path] = None
     CONFIG_DIR: Optional[Path] = None
     
@@ -57,6 +58,14 @@ class Settings(BaseSettings):
     # 项目分析配置
     PROJECT_ANALYSIS_FILE_NAME: str = "project_analysis.txt"
     HISTORY_ANALYSIS_FILE_NAME: str = "history_project_analysis.txt"
+
+    # 建议配置
+    SUGGEST_FILE_PREFIX: str = "suggest_"
+
+    # falkor 配置
+    FALKOR_HOST: str = "localhost"
+    FALKOR_PORT: str = "6379"
+    FALKOR_GRAPH_NAME: str = "None"
 
     class Config:
         env_file = ".env"
@@ -85,6 +94,10 @@ class Settings(BaseSettings):
         if not self.PROJECT_STORE_PATH:
             self.PROJECT_STORE_PATH = self.DATA_DIR / "project_store"
             self.PROJECT_STORE_PATH.mkdir(parents=True, exist_ok=True)
+
+        if not self.SUGGEST_STORE_PATH:
+            self.SUGGEST_STORE_PATH = self.DATA_DIR / "suggest_store"
+            self.SUGGEST_STORE_PATH.mkdir(parents=True, exist_ok=True)
         
         if not self.UPLOADS_DIR:
             self.UPLOADS_DIR = self.DATA_DIR / "uploads"
