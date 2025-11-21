@@ -17,31 +17,7 @@ class ConfigService:
         """初始化配置服务"""
         settings = get_settings()
         self.config_file = settings.CONFIG_DIR / "config.json"
-        self._load_config_file()
         logger.info("Config Service initialized")
-
-    def _load_config_file(self):
-        """确保 config.json 存在，若不存在则根据 settings 创建默认配置文件"""
-        if not self.config_file.exists():
-            logger.info(f"Config file {self.config_file} not found, creating default config...")
-
-            settings = get_settings()
-            default_config = {
-                "api_key": settings.OPENAI_API_KEY,
-                "base_url": settings.OPENAI_BASE_URL,
-                "model": settings.OPENAI_MODEL,
-                "embedding_model": settings.EMBEDDING_MODEL,
-                "embedding_dimension": settings.EMBEDDING_DIMENSION,
-            }
-
-            # 写入默认配置
-            try:
-                with open(self.config_file, "w", encoding="utf-8") as f:
-                    json.dump(default_config, f, ensure_ascii=False, indent=4)
-                logger.info(f"Default config file created at {self.config_file}")
-            except Exception as e:
-                logger.error(f"Failed to create default config file: {e}")
-                raise
 
     async def load_config(self) -> Dict[str, Any]:
         """

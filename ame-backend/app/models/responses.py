@@ -187,6 +187,19 @@ class RecordLifeEventResponse(BaseModel):
     timestamp: str = Field(..., description="记录时间")
     message: str = Field(default="Life event recorded successfully")
 
+class Node(BaseModel):
+    id: str
+    name: str
+
+class Edge(BaseModel):
+    source: str
+    target: str
+    relation: str
+
+class Graph(BaseModel):
+    nodes: List[Node] = Field(default_factory=list)
+    edges: List[Edge] = Field(default_factory=list)
+
 class ApiResponse(BaseModel):
     code: int = Field(..., description="状态码")
     msg: str = Field(..., description="状态消息")

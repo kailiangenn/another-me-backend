@@ -31,6 +31,7 @@ class ConfigRequest(BaseModel):
     model: Optional[str] = Field("gpt-3.5-turbo", description="模型名称")
     embedding_model: Optional[str] = Field(None, description="Embedding 模型名称")
     embedding_dimension: Optional[int] = Field(None, description="Embedding 维度")
+    falkor_port: Optional[int] = Field(None, description="Falkor 端口")
 
 
 class ConfigTestRequest(BaseModel):
@@ -40,6 +41,7 @@ class ConfigTestRequest(BaseModel):
     model: str
     embedding_model: Optional[str] = None
     embedding_dimension: Optional[int] = None
+    falkor_port: Optional[int] = Field(None, description="Falkor 端口")
 
 
 # ==================== Work Scene Requests ====================

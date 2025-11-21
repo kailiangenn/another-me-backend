@@ -2,6 +2,7 @@
 配置管理模块
 负责加载和管理应用配置
 """
+import json
 import os
 from pathlib import Path
 from typing import Optional, List, Dict, Any
@@ -76,6 +77,8 @@ class Settings(BaseSettings):
         super().__init__(**kwargs)
         # 初始化路径
         self._init_paths()
+        # 初始化配置
+        self._init_config()
     
     def _init_paths(self):
         """初始化路径配置"""
@@ -106,6 +109,36 @@ class Settings(BaseSettings):
         if not self.CONFIG_DIR:
             self.CONFIG_DIR = self.DATA_DIR / "config"
             self.CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+
+    def _init_config(self):
+        """初始化配置"""
+        # 如果配置文件存在，读取配置文件
+        config_file = self.CONFIG_DIR / "config.json"
+        if config_file.exists():
+            with open(config_file, "r") as f:
+                config = json.load(f)
+                self.OPENAI_API_KEY = config.get("api_key")
+                self.OPENAI_BASE_URL = config.get("base_url")
+                self.OPENAI_MODEL = config.get("model")
+                self.EMBEDDING_MODEL = config.get("embedding_model")
+                self.EMBEDDING_DIMENSION = config.get("embedding_dimension")
+                self.FALKOR_PORT = config.get("falkor_port")
+        else:
+            # 如果不存在，创建默认配置文件
+            default_config = {
+                "api_key": self.OPENAI_API_KEY,
+                "base_url": self.OPENAI_BASE_URL,
+                "model": self.OPENAI_MODEL,
+                "embedding_model": self.EMBEDDING_MODEL,
+                "embedding_dimension": self.EMBEDDING_DIMENSION,
+                "falkor_port": self.FALKOR_PORT
+            }
+            # 写入默认配置
+            try:
+                with open(config_file, "w", encoding="utf-8") as f:
+                    json.dump(default_config, f, ensure_ascii=False, indent=4)
+            except Exception as e:
+                raise e
     
     @property
     def is_configured(self) -> bool:
