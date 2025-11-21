@@ -2,6 +2,7 @@
 MEM 对话服务
 封装 AME MEM 模块的业务逻辑
 """
+import asyncio
 import sys
 import os
 from pathlib import Path
@@ -9,14 +10,11 @@ from typing import AsyncIterator, List, Dict, Any, Optional
 from datetime import datetime
 
 # 添加 AME 路径
-sys.path.append(str(Path(__file__).parent.parent.parent.parent / "ame"))
+# sys.path.append(str(Path(__file__).parent.parent.parent.parent / "ame"))
 
-from ame.mem.mimic_engine import MimicEngine
-from ame.llm_caller.caller import LLMCaller
 from app.core.config import get_settings
 from app.core.logger import get_logger
-from app.core.exceptions import ConfigurationError, LLMError
-from app.models.responses import Memory
+from app.core.exceptions import ConfigurationError
 
 logger = get_logger(__name__)
 
@@ -29,39 +27,39 @@ class MEMService:
         settings = get_settings()
         
         # 检查配置
-        if not settings.is_configured:
-            logger.warning("API Key not configured")
-            self.engine = None
-            return
-        
-        try:
-            # 初始化 LLM Caller
-            llm_caller = LLMCaller(
-                api_key=settings.OPENAI_API_KEY,
-                base_url=settings.OPENAI_BASE_URL,
-                model=settings.OPENAI_MODEL
-            )
-        except Exception as e:
-            logger.error(f"Failed to initialize LLM caller: {e}")
-            raise LLMError(
-                message="Failed to initialize LLM service",
-                detail=str(e)
-            )
-        
-        try:
-            # 初始化模仿引擎
-            self.engine = MimicEngine(
-                llm_caller=llm_caller,
-                vector_store_type=settings.VECTOR_STORE_TYPE,
-                db_path=str(settings.MEM_VECTOR_STORE_PATH)
-            )
-            
-            logger.info("MEM Service initialized")
-            
-        except Exception as e:
-            logger.error(f"Failed to initialize MEM service: {e}")
-            self.engine = None
-            raise
+        # if not settings.is_configured:
+        #     logger.warning("API Key not configured")
+        #     self.engine = None
+        #     return
+        #
+        # try:
+        #     # 初始化 LLM Caller
+        #     llm_caller = LLMCaller(
+        #         api_key=settings.OPENAI_API_KEY,
+        #         base_url=settings.OPENAI_BASE_URL,
+        #         model=settings.OPENAI_MODEL
+        #     )
+        # except Exception as e:
+        #     logger.error(f"Failed to initialize LLM caller: {e}")
+        #     raise LLMError(
+        #         message="Failed to initialize LLM service",
+        #         detail=str(e)
+        #     )
+        #
+        # try:
+        #     # 初始化模仿引擎
+        #     self.engine = MimicEngine(
+        #         llm_caller=llm_caller,
+        #         vector_store_type=settings.VECTOR_STORE_TYPE,
+        #         db_path=str(settings.MEM_VECTOR_STORE_PATH)
+        #     )
+        #
+        #     logger.info("MEM Service initialized")
+        #
+        # except Exception as e:
+        #     logger.error(f"Failed to initialize MEM service: {e}")
+        #     self.engine = None
+        #     raise
     
     def _check_engine(self):
         """检查引擎是否初始化"""
@@ -70,7 +68,13 @@ class MEMService:
                 message="MEM engine not initialized",
                 detail="Please configure API key first"
             )
-    
+
+    async def mock_generate_response_stream(self):
+        words = ["Hello,", "this", "is", "a", "mocked", "streaming", "response."]
+        for word in words:
+            await asyncio.sleep(0.05)
+            yield word + " "
+
     async def chat_stream(
         self,
         message: str,
@@ -87,21 +91,29 @@ class MEMService:
             文本片段
         """
         # todo chenchenaq 调用ame对话方法
-        self._check_engine()
-        
-        logger.info(f"Chat request: {message[:50]}...")
-        
         try:
-            async for chunk in self.engine.generate_response_stream(
-                prompt=message,
-                temperature=temperature,
-                use_history=True
-            ):
+            # 使用 mock 替代真实 engine
+            async for chunk in self.mock_generate_response_stream():
                 yield chunk
-                
+
         except Exception as e:
             logger.error(f"Chat error: {e}")
             raise
+        # self._check_engine()
+        #
+        # logger.info(f"Chat request: {message[:50]}...")
+        #
+        # try:
+        #     async for chunk in self.engine.generate_response_stream(
+        #         prompt=message,
+        #         temperature=temperature,
+        #         use_history=True
+        #     ):
+        #         yield chunk
+        #
+        # except Exception as e:
+        #     logger.error(f"Chat error: {e}")
+        #     raise
     
     # async def chat(
     #     self,

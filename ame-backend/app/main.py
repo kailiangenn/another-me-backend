@@ -19,7 +19,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.api.v1 import health, config, work
+from app.api.v1 import health, config, work, mem
 from app.middleware.logging import LoggingMiddleware
 from app.middleware.error_handler import ErrorHandlerMiddleware
 from app.core.config import get_settings
@@ -84,11 +84,11 @@ app.include_router(
 #     tags=["rag"]
 # )
 #
-# app.include_router(
-#     mem.router,
-#     prefix="/api/v1/mem",
-#     tags=["mem"]
-# )
+app.include_router(
+    mem.router,
+    prefix="/api/v1/mem",
+    tags=["mem"]
+)
 
 app.include_router(
     config.router,
