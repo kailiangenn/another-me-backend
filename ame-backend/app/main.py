@@ -6,13 +6,18 @@ import sys
 from pathlib import Path
 
 # v0.1.0: 配置 sys.path 以导入 ame 核心模块
-AME_ROOT = Path(__file__).parent.parent.parent / "ame"
-if str(AME_ROOT) not in sys.path:
-    sys.path.insert(0, str(AME_ROOT))
+# AME_ROOT = Path(__file__).parent.parent.parent / "ame"
+# if str(AME_ROOT) not in sys.path:
+#     sys.path.insert(0, str(AME_ROOT))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+
+# 将项目根目录（即包含 app/ 的目录）加入 Python 路径
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from app.api.v1 import health, config, work
 from app.middleware.logging import LoggingMiddleware
