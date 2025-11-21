@@ -6,6 +6,7 @@ import json
 from typing import Dict, Any
 from app.core.config import get_settings, reload_settings
 from app.core.logger import get_logger
+from app.models.responses import ConfigTestResult
 
 logger = get_logger(__name__)
 
@@ -53,7 +54,35 @@ class ConfigService:
             测试结果
         """
         # todo chenchenaq 这里调用三方方法进行配置测试
-        return True
+        # 这里导入三方方法
+        # service = ConnectService()
+        # llm_test = await service.test_llm_config(api_key=config.get('api_key'), model=config.get('model'),
+        #                                          base_url=config.get('base_url'))
+        # storge_test = await service.test_storage_config(port=config.get('falkor_port'),
+        #                                                 graph_name=config.get('falkor_graph_name'),
+        #                                                 password=config.get('FALKOR_PASSWORD'))
+        # if llm_test.success and storge_test.success:
+        #     return ConfigTestResult(result=True,error_message=None)
+        #
+        # else:
+        #     error_message = "测试失败，"
+        #     if not llm_test.success:
+        #         error_message = error_message + "llm配置失败,"
+        #         for value in llm_test.result.values():
+        #             if not value.success:
+        #                 error_message = error_message + value.message + ":" + value.error + ","
+        #         for value in llm_test.result.values():
+        #             if not value.success:
+        #                 error_message = error_message + value.message + ":" + value.error + ","
+        #     if not storge_test.success:
+        #         error_message = error_message + "falkor配置失败,"
+        #         for value in storge_test.result.values():
+        #             if not value.success:
+        #                 error_message = error_message + value.message + ":" + value.error + ","
+        #     error_message = error_message.rstrip(',')
+        #     return ConfigTestResult(result=False, error_message=error_message)
+        return ConfigTestResult(result=False,
+                                error_message="测试失败，llm配置:调用器未正确配置,未配置API密钥或其他必要参数，falkor配置:健康检查失败,数据库连接不健康")
 
     async def save_config(self, config: Dict[str, Any]):
         """

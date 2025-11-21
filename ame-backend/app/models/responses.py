@@ -80,12 +80,8 @@ class MemoryListResponse(BaseModel):
 
 class ConfigTestResult(BaseModel):
     """配置测试结果"""
-    success: bool
-    message: str
-    model_available: Optional[bool] = None
-    embedding_available: Optional[bool] = None
-    embedding_dimension: Optional[int] = None
-
+    result: bool
+    error_message: Optional[str]
 
 class ErrorResponse(BaseModel):
     """错误响应模型"""

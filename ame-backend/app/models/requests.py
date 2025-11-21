@@ -32,6 +32,8 @@ class ConfigRequest(BaseModel):
     embedding_model: Optional[str] = Field(None, description="Embedding 模型名称")
     embedding_dimension: Optional[int] = Field(None, description="Embedding 维度")
     falkor_port: Optional[int] = Field(None, description="Falkor 端口")
+    falkor_graph_name: Optional[str] = Field(None, description="Falkor 图谱名称")
+    falkor_password: Optional[str] = Field(None, description="Falkor 密码")
 
 
 class ConfigTestRequest(BaseModel):
@@ -42,6 +44,8 @@ class ConfigTestRequest(BaseModel):
     embedding_model: Optional[str] = None
     embedding_dimension: Optional[int] = None
     falkor_port: Optional[int] = Field(None, description="Falkor 端口")
+    falkor_graph_name: Optional[str] = Field(None, description="Falkor 图谱名称")
+    falkor_password: Optional[str] = Field(None, description="Falkor 密码")
 
 
 # ==================== Work Scene Requests ====================
